@@ -1,0 +1,22 @@
+[
+    {
+        "tags": ["igreja", "matriz", "senhora", "santana", "anacleto", "padroeira", "fundada", "fundacao"],
+        "response": "A Igreja Matriz de Senhora Santana teve sua origem em 1806, através de uma promessa do Padre Anacleto. A capela inicial foi elevada à paróquia em 1886 e a construção atual ganhou forma a partir de 1914."
+    },
+    {
+        "tags": ["mirante", "alto", "serrano", "vista", "turismo", "relo", "rela"],
+        "response": "Temos grandes mirantes! O Complexo Turístico Mirante Alto Serrano foi inaugurado em 2005 e é o ponto mais alto. Também temos o Mirante do Relo, ótimo para ver a cachoeira e a vegetação nativa."
+    },
+    {
+        "tags": ["padre", "osvaldo", "prefeito", "colegio", "municipal"],
+        "response": "Padre Raimundo Osvaldo Rocha foi pároco da cidade por 28 anos e um dos prefeitos mais influentes da história do município. Faleceu em 2018 e hoje dá nome ao tradicional Colégio Municipal."
+    },
+    {
+        "tags": ["escola", "dubas", "professor", "fundado", "fundacao"],
+        "response": "A Escola Municipal Professor Dubas homenageia a figura do mestre de sala de aula e foca na educação infantil. Recentemente, foi premiada no estado pelos seus altos índices de alfabetização e redução de desigualdades!"
+    },
+    {
+        "tags": ["piozao", "praca", "eventos", "pio", "festa"],
+        "response": "A praça 'O Piozão' é o nosso grande centro de eventos! O nome é uma homenagem ao Dr. Pio X Fernandes, médico e histórico ex-prefeito. É lá que acontecem os grandes shows da Festa de Sant'Ana em julho."
+    }
+]
