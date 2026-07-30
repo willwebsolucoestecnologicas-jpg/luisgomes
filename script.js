@@ -1,15 +1,9 @@
-// 1. Banco de Dados Local (Simulando seu futuro banco externo)
-const dbLuisGomes = {
-    "igreja matriz": "A Igreja Matriz de Senhora Santana teve sua origem em 1806, através de uma promessa do Padre Anacleto. A capela inicial foi elevada à paróquia em 1886 e a construção atual ganhou forma a partir de 1914.",
-    "mirante": "O Complexo Turístico Mirante Alto Serrano foi inaugurado em 2005. É o ponto mais alto da região, oferecendo uma vista incrível do Planalto da Borborema.",
-    "padre osvaldo": "Padre Raimundo Osvaldo Rocha foi pároco da cidade por 28 anos e um dos prefeitos mais influentes da história do município. Faleceu em 2018 e hoje dá nome ao tradicional Colégio Municipal.",
-    "coronel fernandes": "O Coronel Fernandes pertencia à oligarquia tradicional da cidade. O Grupo Escolar com seu nome foi fundado em 1912, sendo o pioneiro no ensino estadual na região.",
-    "piozão": "A praça 'O Piozão' é o centro de eventos da cidade. Seu nome é uma homenagem ao Dr. Pio X Fernandes, médico e histórico ex-prefeito. É o principal palco da Festa de Sant'Ana em julho.",
-    "default": "Que interessante! Ainda estou aprendendo sobre todos os detalhes da nossa serra. Você pode me perguntar sobre a Igreja Matriz, o Mirante, o Piozão, ou figuras como Padre Osvaldo."
-};
+// Variável global para armazenar os dados carregados do JSON
+let dbLuisGomes = [];
 
-// 2. Consumindo API do IBGE ao carregar a página
+// 1. Inicialização: Consumindo API do IBGE e o arquivo JSON local
 window.onload = function() {
+    // Busca dados do IBGE
     fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios/2406606')
         .then(response => response.json())
         .then(data => {
@@ -20,22 +14,79 @@ window.onload = function() {
             console.error('Erro ao buscar dados do IBGE:', error);
             document.getElementById('ibge-info').innerText = "Luís Gomes, RN";
         });
+
+    // Busca o banco de dados de conhecimento local (o arquivo JSON)
+    fetch('dados.json')
+        .then(response => response.json())
+        .then(data => {
+            dbLuisGomes = data;
+            console.log("Banco de dados histórico carregado!");
+        })
+        .catch(error => console.error("Erro ao carregar dados.json:", error));
 };
 
-// 3. Lógica do Chat
+// 2. Função para remover acentos e padronizar o texto
+function normalizeText(text) {
+    return text
+        .normalize('NFD')                     // Separa os acentos das letras
+        .replace(/[\u0300-\u036f]/g, "")      // Remove os acentos
+        .replace(/[^\w\s]/gi, '')             // Remove pontuações
+        .toLowerCase();                       // Transforma em minúsculo
+}
+
+// 3. O Novo Motor de Busca Inteligente com Scoring
+function getBotResponse(input) {
+    const normalizedInput = normalizeText(input);
+    
+    let bestMatch = null;
+    let maxScore = 0;
+
+    // Percorre cada item do nosso banco de dados
+    for (const item of dbLuisGomes) {
+        let score = 0;
+        
+        // Verifica as tags do item contra a frase do usuário
+        for (const tag of item.tags) {
+            const normalizedTag = normalizeText(tag);
+            if (normalizedInput.includes(normalizedTag)) {
+                score += 1; 
+            }
+        }
+
+        // Atualiza a melhor resposta se a pontuação for maior
+        if (score > maxScore) {
+            maxScore = score;
+            bestMatch = item.response;
+        }
+    }
+
+    // Se encontrou alguma correspondência, retorna. Se não, fallback.
+    if (maxScore > 0) {
+        return bestMatch;
+    } else {
+        return "Que interessante! Ainda estou aprendendo sobre todos os detalhes da nossa serra. Tente perguntar usando outras palavras sobre a Igreja Matriz, o Mirante, o Dubas ou o Piozão.";
+    }
+}
+
+// 4. Lógica de Interface do Chat
 function sendMessage() {
     const inputField = document.getElementById('user-input');
     const userText = inputField.value.trim();
     
     if (userText === "") return;
 
-    // Adiciona mensagem do usuário na tela
     addMessage(userText, 'user');
     inputField.value = "";
 
-    // Simula o tempo de digitação do assistente
+    // Simula o tempo de digitação (processamento) do assistente
     setTimeout(() => {
-        const botResponse = getBotResponse(userText.toLowerCase());
+        // Se os dados não carregaram ainda por algum motivo
+        if (dbLuisGomes.length === 0) {
+            addMessage("Ainda estou carregando meus livros de história. Tente de novo em um segundo!", 'bot');
+            return;
+        }
+
+        const botResponse = getBotResponse(userText);
         addMessage(botResponse, 'bot');
     }, 500);
 }
@@ -47,21 +98,9 @@ function addMessage(text, sender) {
     messageDiv.innerText = text;
     chatBox.appendChild(messageDiv);
     
-    // Rola o chat para o final
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// 4. Mecanismo simples de busca de palavras-chave
-function getBotResponse(input) {
-    for (const key in dbLuisGomes) {
-        if (input.includes(key)) {
-            return dbLuisGomes[key];
-        }
-    }
-    return dbLuisGomes["default"];
-}
-
-// Permite enviar com a tecla Enter
 function handleKeyPress(event) {
     if (event.key === 'Enter') {
         sendMessage();
